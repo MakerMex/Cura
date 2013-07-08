@@ -226,7 +226,30 @@ class FirstInfoPage(InfoPage):
 		#self.AddText('* Calibrate your machine')
 		#self.AddText('* Do your first print')
 
+class MakerMexInfoPage(InfoPage):
+	def __init__(self, parent):
+		super(MakerMexInfoPage, self).__init__(parent, "MakerMex RepRap information")
+		self.AddText(
+			'MakeMex RepRap machines are vastly different, and there is no\ndefault configuration in Cura for any of them.')
+		self.AddText('If you like a default profile for your machine added,\nthen make an issue on github.')
+		self.AddSeperator()
+		self.AddText('You will have to manually install Marlin or Sprinter firmware.')
+		self.AddSeperator()
+		self.machineWidth = self.AddLabelTextCtrl('Machine width (mm)', '200')
+		self.machineDepth = self.AddLabelTextCtrl('Machine depth (mm)', '200')
+		self.machineHeight = self.AddLabelTextCtrl('Machine height (mm)', '200')
+		self.nozzleSize = self.AddLabelTextCtrl('Nozzle size (mm)', '0.4')
+		self.heatedBed = self.AddCheckbox('Heated bed')
 
+	def StoreData(self):
+		profile.putPreference('machine_width', self.machineWidth.GetValue())
+		profile.putPreference('machine_depth', self.machineDepth.GetValue())
+		profile.putPreference('machine_height', self.machineHeight.GetValue())
+		profile.putProfileSetting('nozzle_size', self.nozzleSize.GetValue())
+		profile.putProfileSetting('wall_thickness', float(profile.getProfileSettingFloat('nozzle_size')) * 2)
+		profile.putPreference('has_heated_bed', str(self.heatedBed.GetValue()))
+		
+		
 class RepRapInfoPage(InfoPage):
 	def __init__(self, parent):
 		super(RepRapInfoPage, self).__init__(parent, "RepRap information")
@@ -259,15 +282,20 @@ class MachineSelectPage(InfoPage):
 		self.UltimakerRadio = self.AddRadioButton("Ultimaker", style=wx.RB_GROUP)
 		self.UltimakerRadio.SetValue(True)
 		self.UltimakerRadio.Bind(wx.EVT_RADIOBUTTON, self.OnUltimakerSelect)
+		self.MakerMexRadio = self.AddRadioButton("MakerMex")
+		self.MakerMexRadio.Bind(wx.EVT_RADIOBUTTON, self.OnMakerMexSelect)
 		self.OtherRadio = self.AddRadioButton("Other (Ex: RepRap)")
 		self.OtherRadio.Bind(wx.EVT_RADIOBUTTON, self.OnOtherSelect)
-
+		
 	def OnUltimakerSelect(self, e):
 		wx.wizard.WizardPageSimple.Chain(self, self.GetParent().ultimakerFirmwareUpgradePage)
 
-	def OnOtherSelect(self, e):
-		wx.wizard.WizardPageSimple.Chain(self, self.GetParent().repRapInfoPage)
+	def OnMakerMexSelect(self, e):
+		wx.wizard.WizardPageSimple.Chain(self, self.GetParent().makerMexInfoPage)
 
+	def OnOtherSelect(self, e):
+		wx.wizard.WizardPageSimple.Chain(self, self.GetParent().repRapInfoPage)	
+		
 	def StoreData(self):
 		if self.UltimakerRadio.GetValue():
 			profile.putPreference('machine_width', '205')
@@ -569,8 +597,9 @@ class UltimakerCalibrateStepsPerEPage(InfoPage):
 	def __init__(self, parent):
 		super(UltimakerCalibrateStepsPerEPage, self).__init__(parent, "Ultimaker Calibration")
 
-		if profile.getPreference('steps_per_e') == '0':
-			profile.putPreference('steps_per_e', '865.888')
+		#JCOA: comment next 2 lines to make steps_per_e = 0
+		#if profile.getPreference('steps_per_e') == '0':
+		#	profile.putPreference('steps_per_e', '865.888')
 
 		self.AddText("Calibrating the Steps Per E requires some manual actions.")
 		self.AddText("First remove any filament from your machine.")
@@ -694,6 +723,7 @@ class configWizard(wx.wizard.Wizard):
 		self.ultimakerCalibrationPage = UltimakerCalibrationPage(self)
 		self.ultimakerCalibrateStepsPerEPage = UltimakerCalibrateStepsPerEPage(self)
 		self.bedLevelPage = bedLevelWizardMain(self)
+		self.makerMexInfoPage = MakerMexInfoPage(self)
 		self.repRapInfoPage = RepRapInfoPage(self)
 
 		wx.wizard.WizardPageSimple.Chain(self.firstInfoPage, self.machineSelectPage)

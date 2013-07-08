@@ -37,7 +37,7 @@ profileDefaultSettings = {
 	'retraction_extra': '0.0',
 	'retract_on_jumps_only': 'True',
 	'travel_speed': '150',
-	'max_z_speed': '3.0',
+	'max_z_speed': '1.5',
 	'bottom_layer_speed': '20',
 	'cool_min_layer_time': '5',
 	'fan_enabled': 'True',
@@ -70,7 +70,7 @@ profileDefaultSettings = {
 	'raft_margin': '5',
 	'raft_base_material_amount': '100',
 	'raft_interface_material_amount': '100',
-	'bottom_thickness': '0.3',
+	'bottom_thickness': '0.2',
 	'hop_on_move': 'False',
 	'plugin_config': '',
 	'object_center_x': '-1',
@@ -92,30 +92,28 @@ alterationDefault = {
 G21        ;metric values
 G90        ;absolute positioning
 M107       ;start with the fan off
-
 G28 X0 Y0  ;move X/Y to min endstops
 G28 Z0     ;move Z to min endstops
 G92 X0 Y0 Z0 E0         ;reset software position to front/left/z=0.0
-
-G1 Z15.0 F{max_z_speed} ;move the platform down 15mm
-
+G1 Z4.0 F{max_z_speed} ;move the platform down 10mm
 G92 E0                  ;zero the extruded length
 G1 F200 E3              ;extrude 3mm of feed stock
 G92 E0                  ;zero the extruded length again
+;go to the middle of the platform (disabled, as there is no need to go to the center)
+;G1 X{machine_center_x} Y{machine_center_y} F{travel_speed}
 G1 F{travel_speed}
 """,
 #######################################################################################
 	'end.gcode': """;End GCode
 M104 S0                     ;extruder heater off
 M140 S0                     ;heated bed heater off (if you have it)
-
 G91                                    ;relative positioning
-G1 E-1 F300                            ;retract the filament a bit before lifting the nozzle, to release some of the pressure
-G1 Z+0.5 E-5 X-20 Y-20 F{travel_speed} ;move Z up a bit and retract filament even more
+G1 Z+2
+;G1 E-1 F300                            ;retract the filament a bit before lifting the nozzle, to release some of the pressure
+;G1 Z+0.5 E-5 X-20 Y-20 F{travel_speed} ;move Z up a bit and retract filament even more
 G28 X0 Y0                              ;move X/Y to min endstops, so the head is out of the way
-
 M84                         ;steppers off
-G90                         ;absolute positioning
+;G90                         ;absolute positioning
 """,
 #######################################################################################
 	'support_start.gcode': '',
@@ -126,16 +124,14 @@ G90                         ;absolute positioning
 #######################################################################################
 	'nextobject.gcode': """;Move to next object on the platform. clear_z is the minimal z height we need to make sure we do not hit any objects.
 G92 E0
-
 G91                                    ;relative positioning
 G1 E-1 F300                            ;retract the filament a bit before lifting the nozzle, to release some of the pressure
 G1 Z+0.5 E-5 F{travel_speed}           ;move Z up a bit and retract filament even more
 G90                                    ;absolute positioning
-
 G1 Z{clear_z} F{max_z_speed}
 G92 E0
-G1 X{object_center_x} Y{object_center_x} F{travel_speed}
-G1 F200 E6
+;G1 X{machine_center_x} Y{machine_center_y} F{travel_speed}
+G1 E6 F200
 G92 E0
 """,
 #######################################################################################
@@ -521,7 +517,8 @@ def getAlterationFileContents(filename):
 			prefix += 'M190 S%f\n' % (bedTemp)
 	elif filename == 'end.gcode':
 		#Append the profile string to the end of the GCode, so we can load it from the GCode file later.
-		postfix = ';CURA_PROFILE_STRING:%s\n' % (getGlobalProfileString())
+		#postfix = ';CURA_PROFILE_STRING:%s\n' % (getGlobalProfileString())
+		postfix = ';JCOA. Fixed on profile.py because it is too long and causes unintended movements in marlin: CURA_PROFILE_STRING\n'
 	elif filename == 'replace.csv':
 		#Always remove the extruder on/off M codes. These are no longer needed in 5D printing.
 		prefix = 'M101\nM103\n'
