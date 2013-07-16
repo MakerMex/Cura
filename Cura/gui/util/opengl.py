@@ -73,6 +73,57 @@ def DrawMachine(machineSize):
 		DrawMesh(platformMesh)
 		glPopMatrix()
 
+	if profile.getPreference('machine_type') == 'MakerMexI2':
+		glPushMatrix()
+		glEnable(GL_LIGHTING)
+		glTranslate(100, 200, -5)
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, [0.8, 0.8, 0.8])
+		glLightfv(GL_LIGHT0, GL_AMBIENT, [0.5, 0.5, 0.5])
+		glEnable(GL_BLEND)
+		glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR)
+
+		global platformMesh
+		if platformMesh == None:
+			platformMesh = meshLoader.loadMesh(getPathForMesh('makermex_i2_platform.stl'))
+			platformMesh.setRotateMirror(0, False, False, False, False, False)
+
+		DrawMesh(platformMesh)
+		glPopMatrix()
+
+	if profile.getPreference('machine_type') == 'MakerMexI3':
+		glPushMatrix()
+		glEnable(GL_LIGHTING)
+		glTranslate(100, 200, -5)
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, [0.8, 0.8, 0.8])
+		glLightfv(GL_LIGHT0, GL_AMBIENT, [0.5, 0.5, 0.5])
+		glEnable(GL_BLEND)
+		glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR)
+
+		global platformMesh
+		if platformMesh == None:
+			platformMesh = meshLoader.loadMesh(getPathForMesh('makermex_i3_platform.stl'))
+			platformMesh.setRotateMirror(0, False, False, False, False, False)
+
+		DrawMesh(platformMesh)
+		glPopMatrix()
+
+	if profile.getPreference('machine_type') == 'MakerMexI3XL':
+		glPushMatrix()
+		glEnable(GL_LIGHTING)
+		glTranslate(100, 200, -5)
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, [0.8, 0.8, 0.8])
+		glLightfv(GL_LIGHT0, GL_AMBIENT, [0.5, 0.5, 0.5])
+		glEnable(GL_BLEND)
+		glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR)
+
+		global platformMesh
+		if platformMesh == None:
+			platformMesh = meshLoader.loadMesh(getPathForMesh('makermex_i3xl_platform.stl'))
+			platformMesh.setRotateMirror(0, False, False, False, False, False)
+
+		DrawMesh(platformMesh)
+		glPopMatrix()
+		
 	glDisable(GL_LIGHTING)
 	if False:
 		glColor3f(0.7, 0.7, 0.7)
@@ -125,10 +176,10 @@ def DrawMachine(machineSize):
 		sx = machineSize.x
 		sy = machineSize.y
 		for x in xrange(-int(sx/20)-1, int(sx / 20) + 1):
-			for y in xrange(-int(sx/20)-1, int(sy / 20) + 1):
+			for y in xrange(-int(sy/20)-1, int(sy / 20) + 1):
 				x1 = sx/2+x * 10
 				x2 = x1 + 10
-				y1 = sx/2+y * 10
+				y1 = sy/2+y * 10
 				y2 = y1 + 10
 				x1 = max(min(x1, sx), 0)
 				y1 = max(min(y1, sy), 0)
