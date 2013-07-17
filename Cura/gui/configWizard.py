@@ -272,6 +272,7 @@ class MakerMexI2Page(InfoPage):
 		profile.putProfileSetting('nozzle_size', self.nozzleSize.GetValue())
 		profile.putProfileSetting('wall_thickness', float(profile.getProfileSettingFloat('nozzle_size')) * 2)
 		profile.putPreference('has_heated_bed', str(self.heatedBed.GetValue()))
+		profile.putPreference('steps_per_e', '0')
 		
 		
 class MakerMexI3Page(InfoPage):	
@@ -295,6 +296,7 @@ class MakerMexI3Page(InfoPage):
 		profile.putProfileSetting('nozzle_size', self.nozzleSize.GetValue())
 		profile.putProfileSetting('wall_thickness', float(profile.getProfileSettingFloat('nozzle_size')) * 2)
 		profile.putPreference('has_heated_bed', str(self.heatedBed.GetValue()))
+		profile.putPreference('steps_per_e', '0')
 
 class MakerMexI3XLPage(InfoPage):	
 	def __init__(self, parent):
@@ -317,6 +319,7 @@ class MakerMexI3XLPage(InfoPage):
 		profile.putProfileSetting('nozzle_size', self.nozzleSize.GetValue())
 		profile.putProfileSetting('wall_thickness', float(profile.getProfileSettingFloat('nozzle_size')) * 2)
 		profile.putPreference('has_heated_bed', str(self.heatedBed.GetValue()))
+		profile.putPreference('steps_per_e', '0')
 
 		
 		
@@ -668,8 +671,8 @@ class UltimakerCalibrateStepsPerEPage(InfoPage):
 		super(UltimakerCalibrateStepsPerEPage, self).__init__(parent, "Ultimaker Calibration")
 
 		#JCOA: comment next 2 lines to make steps_per_e = 0
-		#if profile.getPreference('steps_per_e') == '0':
-		#	profile.putPreference('steps_per_e', '865.888')
+		if profile.getPreference('steps_per_e') == '0':
+			profile.putPreference('steps_per_e', '865.888')
 
 		self.AddText("Calibrating the Steps Per E requires some manual actions.")
 		self.AddText("First remove any filament from your machine.")
@@ -799,12 +802,13 @@ class configWizard(wx.wizard.Wizard):
 		self.makerMexI3XLPage = MakerMexI3XLPage(self)
 		self.repRapInfoPage = RepRapInfoPage(self)
 
+		# Set the default chained page. It can be changed with option selection.
 		wx.wizard.WizardPageSimple.Chain(self.firstInfoPage, self.machineSelectPage)
 		wx.wizard.WizardPageSimple.Chain(self.machineSelectPage, self.makerMexInfoPage)
 		wx.wizard.WizardPageSimple.Chain(self.ultimakerSelectParts, self.ultimakerFirmwareUpgradePage)
 		wx.wizard.WizardPageSimple.Chain(self.ultimakerFirmwareUpgradePage, self.ultimakerCheckupPage)
 		wx.wizard.WizardPageSimple.Chain(self.ultimakerCheckupPage, self.bedLevelPage)
-		#wx.wizard.WizardPageSimple.Chain(self.ultimakerCalibrationPage, self.ultimakerCalibrateStepsPerEPage)
+		wx.wizard.WizardPageSimple.Chain(self.makerMexInfoPage, self.makerMexI2Page)
 
 		self.FitToPage(self.firstInfoPage)
 		self.GetPageAreaSizer().Add(self.firstInfoPage)

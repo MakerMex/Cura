@@ -56,6 +56,36 @@ def InitGL(window, view3D, zoom):
 platformMesh = None
 
 def DrawMachine(machineSize):
+	glDisable(GL_LIGHTING)
+	glDisable(GL_CULL_FACE)
+	glEnable(GL_BLEND)
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+	sx = machineSize.x
+	sy = machineSize.y
+	for x in xrange(-int(sx/20)-1, int(sx / 20) + 1):
+		for y in xrange(-int(sy/20)-1, int(sy / 20) + 1):
+			x1 = sx/2+x * 10
+			x2 = x1 + 10
+			y1 = sy/2+y * 10
+			y2 = y1 + 10
+			x1 = max(min(x1, sx), 0)
+			y1 = max(min(y1, sy), 0)
+			x2 = max(min(x2, sx), 0)
+			y2 = max(min(y2, sy), 0)
+			if (x & 1) == (y & 1):
+				glColor4ub(5, 171, 231, 127)
+			else:
+				glColor4ub(5 * 8 / 10, 171 * 8 / 10, 231 * 8 / 10, 128)
+			glBegin(GL_QUADS)
+			glVertex3f(x1, y1, -0.02)
+			glVertex3f(x2, y1, -0.02)
+			glVertex3f(x2, y2, -0.02)
+			glVertex3f(x1, y2, -0.02)
+			glEnd()
+
+	glEnable(GL_CULL_FACE)
+
 	if profile.getPreference('machine_type') == 'ultimaker':
 		glPushMatrix()
 		glEnable(GL_LIGHTING)
@@ -72,6 +102,8 @@ def DrawMachine(machineSize):
 
 		DrawMesh(platformMesh)
 		glPopMatrix()
+		glDisable(GL_LIGHTING)
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 	if profile.getPreference('machine_type') == 'MakerMexI2':
 		glPushMatrix()
@@ -89,6 +121,8 @@ def DrawMachine(machineSize):
 
 		DrawMesh(platformMesh)
 		glPopMatrix()
+		glDisable(GL_LIGHTING)
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 	if profile.getPreference('machine_type') == 'MakerMexI3':
 		glPushMatrix()
@@ -106,6 +140,8 @@ def DrawMachine(machineSize):
 
 		DrawMesh(platformMesh)
 		glPopMatrix()
+		glDisable(GL_LIGHTING)
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 	if profile.getPreference('machine_type') == 'MakerMexI3XL':
 		glPushMatrix()
@@ -123,116 +159,157 @@ def DrawMachine(machineSize):
 
 		DrawMesh(platformMesh)
 		glPopMatrix()
-		
-	glDisable(GL_LIGHTING)
-	if False:
-		glColor3f(0.7, 0.7, 0.7)
-		glLineWidth(2)
-		glBegin(GL_LINES)
-		for i in xrange(0, int(machineSize.x), 10):
-			glVertex3f(i, 0, 0)
-			glVertex3f(i, machineSize.y, 0)
-		for i in xrange(0, int(machineSize.y), 10):
-			glVertex3f(0, i, 0)
-			glVertex3f(machineSize.x, i, 0)
-		glEnd()
-
-		glEnable(GL_LINE_SMOOTH)
-		glEnable(GL_BLEND)
+		glDisable(GL_LIGHTING)
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-		glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+	
+	glColor4ub(5, 171, 231, 64)
+	glBegin(GL_QUADS)
+	glVertex3f(0, 0, machineSize.z)
+	glVertex3f(0, machineSize.y, machineSize.z)
+	glVertex3f(machineSize.x, machineSize.y, machineSize.z)
+	glVertex3f(machineSize.x, 0, machineSize.z)
+	glEnd()
 
-		glColor3f(0.0, 0.0, 0.0)
-		glLineWidth(4)
-		glBegin(GL_LINE_LOOP)
-		glVertex3f(0, 0, 0)
-		glVertex3f(machineSize.x, 0, 0)
-		glVertex3f(machineSize.x, machineSize.y, 0)
-		glVertex3f(0, machineSize.y, 0)
-		glEnd()
+	glColor4ub(5, 171, 231, 96)
+	glBegin(GL_QUADS)
+	glVertex3f(0, 0, 0)
+	glVertex3f(0, 0, machineSize.z)
+	glVertex3f(machineSize.x, 0, machineSize.z)
+	glVertex3f(machineSize.x, 0, 0)
 
-		glLineWidth(2)
-		glBegin(GL_LINE_LOOP)
-		glVertex3f(0, 0, machineSize.z)
-		glVertex3f(machineSize.x, 0, machineSize.z)
-		glVertex3f(machineSize.x, machineSize.y, machineSize.z)
-		glVertex3f(0, machineSize.y, machineSize.z)
-		glEnd()
-		glBegin(GL_LINES)
-		glVertex3f(0, 0, 0)
-		glVertex3f(0, 0, machineSize.z)
-		glVertex3f(machineSize.x, 0, 0)
-		glVertex3f(machineSize.x, 0, machineSize.z)
-		glVertex3f(machineSize.x, machineSize.y, 0)
-		glVertex3f(machineSize.x, machineSize.y, machineSize.z)
-		glVertex3f(0, machineSize.y, 0)
-		glVertex3f(0, machineSize.y, machineSize.z)
-		glEnd()
-	else:
-		glDisable(GL_CULL_FACE)
-		glEnable(GL_BLEND)
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+	glVertex3f(0, machineSize.y, machineSize.z)
+	glVertex3f(0, machineSize.y, 0)
+	glVertex3f(machineSize.x, machineSize.y, 0)
+	glVertex3f(machineSize.x, machineSize.y, machineSize.z)
+	glEnd()
 
-		sx = machineSize.x
-		sy = machineSize.y
-		for x in xrange(-int(sx/20)-1, int(sx / 20) + 1):
-			for y in xrange(-int(sy/20)-1, int(sy / 20) + 1):
-				x1 = sx/2+x * 10
-				x2 = x1 + 10
-				y1 = sy/2+y * 10
-				y2 = y1 + 10
-				x1 = max(min(x1, sx), 0)
-				y1 = max(min(y1, sy), 0)
-				x2 = max(min(x2, sx), 0)
-				y2 = max(min(y2, sy), 0)
-				if (x & 1) == (y & 1):
-					glColor4ub(5, 171, 231, 127)
-				else:
-					glColor4ub(5 * 8 / 10, 171 * 8 / 10, 231 * 8 / 10, 128)
-				glBegin(GL_QUADS)
-				glVertex3f(x1, y1, -0.01)
-				glVertex3f(x2, y1, -0.01)
-				glVertex3f(x2, y2, -0.01)
-				glVertex3f(x1, y2, -0.01)
-				glEnd()
+	glColor4ub(5, 171, 231, 128)
+	glBegin(GL_QUADS)
+	glVertex3f(0, 0, machineSize.z)
+	glVertex3f(0, 0, 0)
+	glVertex3f(0, machineSize.y, 0)
+	glVertex3f(0, machineSize.y, machineSize.z)
 
-		glEnable(GL_CULL_FACE)
+	glVertex3f(machineSize.x, 0, 0)
+	glVertex3f(machineSize.x, 0, machineSize.z)
+	glVertex3f(machineSize.x, machineSize.y, machineSize.z)
+	glVertex3f(machineSize.x, machineSize.y, 0)
+	glEnd()
 
-		glColor4ub(5, 171, 231, 64)
-		glBegin(GL_QUADS)
-		glVertex3f(0, 0, machineSize.z)
-		glVertex3f(0, machineSize.y, machineSize.z)
-		glVertex3f(machineSize.x, machineSize.y, machineSize.z)
-		glVertex3f(machineSize.x, 0, machineSize.z)
-		glEnd()
+	glDisable(GL_BLEND)
+	
 
-		glColor4ub(5, 171, 231, 96)
-		glBegin(GL_QUADS)
-		glVertex3f(0, 0, 0)
-		glVertex3f(0, 0, machineSize.z)
-		glVertex3f(machineSize.x, 0, machineSize.z)
-		glVertex3f(machineSize.x, 0, 0)
 
-		glVertex3f(0, machineSize.y, machineSize.z)
-		glVertex3f(0, machineSize.y, 0)
-		glVertex3f(machineSize.x, machineSize.y, 0)
-		glVertex3f(machineSize.x, machineSize.y, machineSize.z)
-		glEnd()
+	
+	# glDisable(GL_LIGHTING)
+	# if False:
+		# glColor3f(0.7, 0.7, 0.7)
+		# glLineWidth(2)
+		# glBegin(GL_LINES)
+		# for i in xrange(0, int(machineSize.x), 10):
+			# glVertex3f(i, 0, 0)
+			# glVertex3f(i, machineSize.y, 0)
+		# for i in xrange(0, int(machineSize.y), 10):
+			# glVertex3f(0, i, 0)
+			# glVertex3f(machineSize.x, i, 0)
+		# glEnd()
 
-		glColor4ub(5, 171, 231, 128)
-		glBegin(GL_QUADS)
-		glVertex3f(0, 0, machineSize.z)
-		glVertex3f(0, 0, 0)
-		glVertex3f(0, machineSize.y, 0)
-		glVertex3f(0, machineSize.y, machineSize.z)
+		# glEnable(GL_LINE_SMOOTH)
+		# glEnable(GL_BLEND)
+		# glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+		# glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
 
-		glVertex3f(machineSize.x, 0, 0)
-		glVertex3f(machineSize.x, 0, machineSize.z)
-		glVertex3f(machineSize.x, machineSize.y, machineSize.z)
-		glVertex3f(machineSize.x, machineSize.y, 0)
-		glEnd()
+		# glColor3f(0.0, 0.0, 0.0)
+		# glLineWidth(4)
+		# glBegin(GL_LINE_LOOP)
+		# glVertex3f(0, 0, 0)
+		# glVertex3f(machineSize.x, 0, 0)
+		# glVertex3f(machineSize.x, machineSize.y, 0)
+		# glVertex3f(0, machineSize.y, 0)
+		# glEnd()
 
-		glDisable(GL_BLEND)
+		# glLineWidth(2)
+		# glBegin(GL_LINE_LOOP)
+		# glVertex3f(0, 0, machineSize.z)
+		# glVertex3f(machineSize.x, 0, machineSize.z)
+		# glVertex3f(machineSize.x, machineSize.y, machineSize.z)
+		# glVertex3f(0, machineSize.y, machineSize.z)
+		# glEnd()
+		# glBegin(GL_LINES)
+		# glVertex3f(0, 0, 0)
+		# glVertex3f(0, 0, machineSize.z)
+		# glVertex3f(machineSize.x, 0, 0)
+		# glVertex3f(machineSize.x, 0, machineSize.z)
+		# glVertex3f(machineSize.x, machineSize.y, 0)
+		# glVertex3f(machineSize.x, machineSize.y, machineSize.z)
+		# glVertex3f(0, machineSize.y, 0)
+		# glVertex3f(0, machineSize.y, machineSize.z)
+		# glEnd()
+	# else:
+		# glDisable(GL_CULL_FACE)
+		# glEnable(GL_BLEND)
+		# glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+		# sx = machineSize.x
+		# sy = machineSize.y
+		# for x in xrange(-int(sx/20)-1, int(sx / 20) + 1):
+			# for y in xrange(-int(sy/20)-1, int(sy / 20) + 1):
+				# x1 = sx/2+x * 10
+				# x2 = x1 + 10
+				# y1 = sy/2+y * 10
+				# y2 = y1 + 10
+				# x1 = max(min(x1, sx), 0)
+				# y1 = max(min(y1, sy), 0)
+				# x2 = max(min(x2, sx), 0)
+				# y2 = max(min(y2, sy), 0)
+				# if (x & 1) == (y & 1):
+					# glColor4ub(5, 171, 231, 127)
+				# else:
+					# glColor4ub(5 * 8 / 10, 171 * 8 / 10, 231 * 8 / 10, 128)
+				# glBegin(GL_QUADS)
+				# glVertex3f(x1, y1, -0.01)
+				# glVertex3f(x2, y1, -0.01)
+				# glVertex3f(x2, y2, -0.01)
+				# glVertex3f(x1, y2, -0.01)
+				# glEnd()
+
+		# glEnable(GL_CULL_FACE)
+
+		# glColor4ub(5, 171, 231, 64)
+		# glBegin(GL_QUADS)
+		# glVertex3f(0, 0, machineSize.z)
+		# glVertex3f(0, machineSize.y, machineSize.z)
+		# glVertex3f(machineSize.x, machineSize.y, machineSize.z)
+		# glVertex3f(machineSize.x, 0, machineSize.z)
+		# glEnd()
+
+		# glColor4ub(5, 171, 231, 96)
+		# glBegin(GL_QUADS)
+		# glVertex3f(0, 0, 0)
+		# glVertex3f(0, 0, machineSize.z)
+		# glVertex3f(machineSize.x, 0, machineSize.z)
+		# glVertex3f(machineSize.x, 0, 0)
+
+		# glVertex3f(0, machineSize.y, machineSize.z)
+		# glVertex3f(0, machineSize.y, 0)
+		# glVertex3f(machineSize.x, machineSize.y, 0)
+		# glVertex3f(machineSize.x, machineSize.y, machineSize.z)
+		# glEnd()
+
+		# glColor4ub(5, 171, 231, 128)
+		# glBegin(GL_QUADS)
+		# glVertex3f(0, 0, machineSize.z)
+		# glVertex3f(0, 0, 0)
+		# glVertex3f(0, machineSize.y, 0)
+		# glVertex3f(0, machineSize.y, machineSize.z)
+
+		# glVertex3f(machineSize.x, 0, 0)
+		# glVertex3f(machineSize.x, 0, machineSize.z)
+		# glVertex3f(machineSize.x, machineSize.y, machineSize.z)
+		# glVertex3f(machineSize.x, machineSize.y, 0)
+		# glEnd()
+
+		# glDisable(GL_BLEND)
 
 	glPushMatrix()
 	glTranslate(5, 5, 2)
