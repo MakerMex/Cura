@@ -14,6 +14,13 @@ from optparse import OptionParser
 
 from Cura.util import profile
 
+#JCOA wx fix for Ubuntu systems.
+#Do not do this steps on windows.
+import platform
+if platform.system() != "Windows":
+	import wxversion
+	wxversion.select('2.8')
+
 __author__ = 'Daid'
 __credits__ = """
 David Braam (daid303@gmail.com)
